@@ -1,0 +1,65 @@
+#login_form button, #register_form button {
+  color: #c93030;
+  transition: 0.3s;
+  width: 80px;
+  background: #E9DCC9;
+}
+
+#login_form input[type="email"], #login_form input[type="password"] {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  border-radius: 7px;
+  background-color: #FAF9F6 !important;
+  border: 2px solid #000;
+  border-radius: 7px;
+  outline: none; 
+  box-shadow: none;  
+}
+
+input[type="email"]:focus, input[type="password"]:focus {
+  border-color: #944545;
+}
+
+input, label {
+  display: block;
+}
+
+#login_form label {
+  margin-bottom: 15px;
+  font-size: 15px;
+}
+
+#login_form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 3px black solid;
+  border-radius: 25px;
+  padding: 10px;
+  min-width: 400px;
+  width: 25vw;
+  height: 45vh;
+}
+
+#login_wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:active {
+  background-color: #FAF9F6 !important;
+  -webkit-box-shadow: 0 0 0px 1000px #FAF9F6 inset !important;
+  -webkit-text-fill-color: black !important;
+  border-radius: 7px;
+  border: 2px solid #000;
+}
+
+input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0px 1000px #FAF9F6 inset, 0 0 0 2px #c93030 inset !important;
+  -webkit-text-fill-color: #000 !important;
+  border-radius: 7px;
+}
