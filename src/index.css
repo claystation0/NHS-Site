@@ -1,0 +1,382 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Vast+Shadow&display=swap');
+
+:root {
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+nav {
+  width: 100%;
+  min-height: 60px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;  
+  margin: 0;
+}
+
+.nav_left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  white-space: nowrap;
+}
+
+.nav_left h1 {
+  font-family: "IBM Plex Serif", serif;
+  font-weight: 500;
+  font-style: normal;
+  font-size: 1.8em;
+  cursor: default;
+}
+
+#calendar-widget {
+  max-width: 200px;
+}
+
+.nav_right {
+  display: flex;
+  align-items: center;
+}
+
+#nav_logo {
+  max-height: 50px;
+  width: auto;
+}
+
+#avatar {
+  max-height: 100px;
+  width: auto;
+  cursor: pointer;
+}
+
+a {
+  font-weight: 500;
+  color: #646cff;
+  text-decoration: inherit;
+}
+a:hover {
+  color: #535bf2;
+}
+
+body {
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  background: #FAF9F6;
+}
+
+#dashboard {
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  box-sizing: border-box;
+  margin-top: 2vh;
+  gap: 1rem; /* space between left and right dashboard */
+}
+
+#left_dashboard {
+  flex: 1 1 300px; /* grow, shrink, base width */
+  min-width: 250px; /* optional */
+}
+
+#right_dashboard {
+  flex: 0 1 300px; /* don't grow, can shrink, base 300px */
+  max-width: 480px; /* optional max width for large screens */
+  padding: 20px;
+  border-radius: 25px;
+  min-height: 500px;
+  height: 78vh;
+  font-family: "IBM Plex Serif", serif;
+  font-weight: 300;
+  font-style: normal;
+  box-sizing: border-box;
+}
+
+#right_dashboard h1 {
+  font-size: 24px;
+  font-weight: 500;
+}
+
+#right_dashboard h2 {
+  font-size: 20px;
+  font-weight: 400;
+}
+
+#events-viewer {
+  border: 3px solid black;
+  padding: 15px;
+  margin-top: 15px;
+  border-radius: 15px;
+  background: yellow;
+}
+
+#left-dashboard {
+  min-width: 500px;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  border-radius: 8px;
+  padding: 24px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 20px;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 28px;
+  cursor: pointer;
+  color: #6b7280;
+  padding: 0;
+  line-height: 1;
+}
+
+.modal-close:hover {
+  color: #374151;
+}
+
+.form-group {
+  margin-bottom: 16px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 500;
+  font-size: 14px;
+  color: #374151;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  font-size: 14px;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.form-group input:disabled,
+.form-group select:disabled,
+.form-group textarea:disabled {
+  background: #f3f4f6;
+  cursor: not-allowed;
+}
+
+.form-group textarea {
+  resize: vertical;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+#menu_dashboard {
+  display: flex;
+  justify-content: space_between;
+}
+
+#menu {
+  margin-top: 2vh;
+  padding: 10px;
+  border-radius: 15px;
+}
+
+#menu_img {
+  cursor: pointer;
+}
+
+#menu_img {
+  width: 28px;
+  cursor: pointer;
+}
+
+h1, h2, p, label, button, input {
+  font-family: "IBM Plex Serif", serif;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-field label {
+  font-weight: 500;
+  font-size: 14px;
+  color: #333;
+}
+
+.form-field input,
+.form-field select {
+  padding: 12px;
+  border: 2px solid #000;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: "IBM Plex Serif", serif;
+  background: white;
+}
+
+.form-field input:focus,
+.form-field select:focus {
+  outline: none;
+  border-color: #c93030;
+}
+
+.form-hint {
+  font-size: 12px;
+  color: #666;
+  font-style: italic;
+}
+
+.btn-primary {
+  background: #c93030;
+  color: white;
+  border: 2px solid #000;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  align-self: flex-start;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: #8b1e1e;
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.admin-info {
+  background: #E9DCC9;
+  border: 2px dashed #000;
+  border-radius: 12px;
+  padding: 24px;
+}
+
+.admin-info p {
+  margin: 8px 0;
+  color: #333;
+}
+
+.danger-zone {
+  border-color: #c93030;
+  background: #fee2e2;
+}
+
+.danger-zone h2 {
+  color: #c93030;
+}
+
+.danger-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
+}
+
+.danger-content h3 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #991b1b;
+  margin: 0 0 8px 0;
+}
+
+.danger-content p {
+  font-size: 14px;
+  color: #666;
+  margin: 0;
+}
+
+.btn-danger {
+  background: #c93030;
+  color: white;
+  border: 2px solid #991b1b;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  white-space: nowrap;
+}
+
+.btn-danger:hover:not(:disabled) {
+  background: #8b1e1e;
+}
+
+.btn-danger:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+  .settings-container {
+    padding: 20px 12px;
+  }
+
+
+  .settings-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+
+  .danger-content {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .btn-danger {
+    width: 100%;
+  }
+}

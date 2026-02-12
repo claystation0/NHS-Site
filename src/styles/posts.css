@@ -1,0 +1,390 @@
+.posts-container {
+  width: 100%;
+  max-width: 800px;
+  padding: 20px;
+}
+
+.posts-loading {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+  font-size: 16px;
+}
+
+.posts-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 16px;
+  margin-bottom: 20px;
+}
+
+.posts-header h2 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.new-post-btn {
+  background-color: #c93030;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.new-post-btn:hover:not(:disabled) {
+  background-color: #ef4444;
+}
+
+.new-post-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.new-post-form {
+  background: #FAF9F6;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.new-post-form input,
+.new-post-form textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  resize: vertical;
+  background: white;
+}
+
+.new-post-form input:focus,
+.new-post-form textarea:focus {
+  outline: none;
+  border-color: #c93030;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.new-post-form input:disabled,
+.new-post-form textarea:disabled {
+  background-color: #f3f4f6;
+  cursor: not-allowed;
+}
+
+.submit-post-btn {
+  align-self: flex-end;
+  background-color: #c93030;
+  color: white;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.submit-post-btn:hover:not(:disabled) {
+  background-color: #ef4444;
+}
+
+.submit-post-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.posts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.no-posts {
+  text-align: center;
+  padding: 60px 20px;
+  color: #9ca3af;
+  font-size: 16px;
+}
+
+.post-card {
+  background: #FAF9F6;
+  border: 2px solid black;
+  border-radius: 12px;
+  padding: 20px;
+  transition: box-shadow 0.2s;
+}
+
+.post-card:hover {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+              0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+.post-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.post-author {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.author-name {
+  font-weight: 600;
+  color: #1f2937;
+  font-size: 14px;
+}
+
+.role-badge {
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.role-badge.admin {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.role-badge.leader {
+  background-color: #fee2e2;
+  color: #c93030;
+  border: 1px solid #c93030;
+}
+
+.post-date {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.post-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #111827;
+  margin: 0 0 8px 0;
+  overflow-wrap: break-word;
+}
+
+.post-description {
+  font-size: 15px;
+  color: #4b5563;
+  line-height: 1.6;
+  margin: 0 0 16px 0;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+}
+
+.post-actions {
+  display: flex;
+  gap: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #f3f4f6;
+}
+
+.reply-toggle-btn {
+  background: transparent;
+  color: #c93030;
+  border: none;
+  padding: 6px 12px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background-color 0.2s;
+}
+
+.reply-toggle-btn:hover {
+  color: #ef4444;
+}
+
+.replies-section {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #e5e7eb;
+}
+
+.replies-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.no-replies {
+  text-align: center;
+  padding: 20px;
+  color: #9ca3af;
+  font-size: 14px;
+  font-style: italic;
+}
+
+.reply-card {
+  border-left: 3px solid #92400e;
+  border-radius: 8px;
+  padding: 12px 16px;
+}
+
+.reply-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.reply-author {
+  font-weight: 600;
+  color: #374151;
+  font-size: 13px;
+}
+
+.reply-date {
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+.reply-content {
+  font-size: 14px;
+  color: #4b5563;
+  line-height: 1.5;
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+}
+
+.new-reply-form {
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+}
+
+.new-reply-form textarea {
+  flex: 1;
+  padding: 10px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: inherit;
+  resize: vertical;
+  min-height: 60px;
+}
+
+.new-reply-form textarea:focus {
+  outline: none;
+  border-color: #c93030;
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.new-reply-form textarea:disabled {
+  background-color: #f3f4f6;
+  cursor: not-allowed;
+}
+
+.submit-reply-btn {
+  background-color: #c93030;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  white-space: nowrap;
+  height: fit-content;
+}
+
+.submit-reply-btn:hover:not(:disabled) {
+  background-color: #ef4444;
+}
+
+.submit-reply-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-icon.edit {
+  all: unset;
+  margin: 2px;
+  width: 25px;
+  height: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 5px;
+  color: grey;
+  transition: 0.3s;
+}
+
+.btn-icon.edit:hover {
+  color: white;
+  background: grey;
+  cursor: pointer;
+}
+
+.btn-icon.delete {
+  all: unset;
+  margin: 2px;
+  width: 25px;
+  height: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 5px;
+  color: #c93030;
+  transition: 0.3s;
+}
+
+.btn-icon.delete:hover {
+  color: white;
+  background: #c93030;
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .posts-container {
+    padding: 12px;
+  }
+
+  .posts-header h2 {
+    font-size: 24px;
+  }
+
+  .post-title {
+    font-size: 18px;
+  }
+
+  .new-reply-form {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .submit-reply-btn {
+    width: 100%;
+  }
+}
+
+.link {
+  color: #c93030;
+  transition: 0.3s;
+}
+
+.link:hover {
+  color: #ef4444;
+}
