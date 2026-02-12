@@ -11,6 +11,7 @@ export default function Signup() {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [grade, setGrade] = useState('');
+  const [emailSent, setEmailSent] = useState(false);
   const navigate = useNavigate();
 
   const handleSignUp = async (e) => {
@@ -27,7 +28,7 @@ export default function Signup() {
     }
 
     setLoading(true);
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -36,16 +37,132 @@ export default function Signup() {
           last_name: lastName,
           grade: gradeNum,
         },
+        emailRedirectTo: `${window.location.origin}/login`, // Redirect after email verification
       },
     });
 
     if (error) {
       alert(error.message);
+      setLoading(false);
     } else {
-      navigate('/login');
+      // Show success message instead of navigating
+      setEmailSent(true);
+      setLoading(false);
     }
-    setLoading(false);
   };
+
+  // If email verification was sent, show confirmation message
+  if (emailSent) {
+    return (
+      <div style={{
+        minHeight: '100vh',
+        background: 'linear-gradient(135deg, #FAF9F6 0%, #E9DCC9 100%)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '2rem'
+      }}>
+        <div style={{
+          background: 'white',
+          borderRadius: '24px',
+          border: '3px solid #000',
+          boxShadow: '8px 8px 0px rgba(0,0,0,0.1)',
+          maxWidth: '560px',
+          width: '100%',
+          overflow: 'hidden'
+        }}>
+          <div style={{
+            background: 'linear-gradient(135deg, #c93030 0%, #8b1e1e 100%)',
+            padding: '3rem 2rem',
+            textAlign: 'center',
+            borderBottom: '3px solid #000'
+          }}>
+            <h1 style={{
+              color: 'white',
+              fontSize: '2rem',
+              fontWeight: 700,
+              margin: '0 0 0.5rem 0',
+              textShadow: '2px 2px 4px rgba(0,0,0,0.2)'
+            }}>Verify Your Email</h1>
+          </div>
+
+          <div style={{ padding: '2.5rem', textAlign: 'center' }}>
+            <div style={{
+              background: '#E8F5E9',
+              border: '2px solid #4CAF50',
+              borderRadius: '12px',
+              padding: '1.5rem',
+              marginBottom: '2rem'
+            }}>
+              <p style={{
+                fontSize: '1.125rem',
+                color: '#2E7D32',
+                margin: '0 0 0.5rem 0',
+                fontWeight: 600
+              }}>
+                ✓ Account created successfully!
+              </p>
+              <p style={{
+                fontSize: '0.95rem',
+                color: '#1B5E20',
+                margin: 0
+              }}>
+                We've sent a verification email to:
+              </p>
+              <p style={{
+                fontSize: '1rem',
+                color: '#000',
+                margin: '0.5rem 0 0 0',
+                fontWeight: 600
+              }}>
+                {email}
+              </p>
+            </div>
+
+            <div style={{
+              background: '#FFF3E0',
+              border: '2px solid #FF9800',
+              borderRadius: '12px',
+              padding: '1.5rem',
+              marginBottom: '2rem',
+              textAlign: 'left'
+            }}>
+              <ol style={{
+                fontSize: '0.95rem',
+                color: '#333',
+                margin: 0,
+                paddingLeft: '1.5rem'
+              }}>
+                Check your inbox for a verification email from Supabase Auth. You may need to check your Spam folder.
+              </ol>
+            </div>
+
+            <Link to="/login">
+              <button
+                className="auth-button"
+                style={{
+                  width: '100%',
+                  padding: '1rem',
+                  background: 'linear-gradient(135deg, #c93030 0%, #8b1e1e 100%)',
+                  color: 'white',
+                  border: '3px solid #000',
+                  borderRadius: '12px',
+                  fontSize: '1.125rem',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  transition: 'all 0.3s',
+                  boxShadow: '4px 4px 0px rgba(0,0,0,0.1)',
+                  fontFamily: 'inherit'
+                }}
+              >
+                Go to Sign In
+              </button>
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div style={{
