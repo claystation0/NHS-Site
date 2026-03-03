@@ -10,12 +10,14 @@ export default function Volunteer({ session }) {
   const [showNewForm, setShowNewForm] = useState(false);
   const [isDrawing, setIsDrawing] = useState(false);
   const [showSignatureModal, setShowSignatureModal] = useState(false);
+  const [tempDate, setTempDate] = useState('');
   const canvasRef = useRef(null);
   const modalCanvasRef = useRef(null);
+
   const [formData, setFormData] = useState({
     hours: '',
     description: '',
-    date: '',
+    dates: [],
     trimester: '',
     category: '',
     supervisor_name: '',
@@ -47,17 +49,13 @@ export default function Volunteer({ session }) {
 
   const initializeCanvas = (canvas) => {
     if (!canvas) return;
-
     const ctx = canvas.getContext('2d');
-    
     // Set internal resolution
     canvas.width = CANVAS_WIDTH;
     canvas.height = CANVAS_HEIGHT;
-    
     // Clear with background color
     ctx.fillStyle = '#FAF9F6';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    
     // Load existing signature if available
     if (formData.signature) {
       const img = new Image();
@@ -85,9 +83,27 @@ export default function Volunteer({ session }) {
     setLoading(false);
   };
 
+  const addDate = () => {
+    if (!tempDate) return;
+    if (!formData.dates.includes(tempDate)) {
+      setFormData({
+        ...formData,
+        dates: [...formData.dates, tempDate].sort()
+      });
+    }
+    setTempDate('');
+  };
+
+  const removeDate = (index) => {
+    setFormData({
+      ...formData,
+      dates: formData.dates.filter((_, i) => i !== index)
+    });
+  };
+
   const handleSubmit = async (saveAs = 'in_progress') => {
     if (saveAs === 'completed') {
-      if (!formData.hours || !formData.description || !formData.date || !formData.trimester || !formData.category || !formData.supervisor_name) {
+      if (!formData.hours || !formData.description || formData.dates.length === 0 || !formData.trimester || !formData.category || !formData.supervisor_name) {
         alert('Please fill in all required fields to mark as completed');
         return;
       }
@@ -114,7 +130,7 @@ export default function Volunteer({ session }) {
     const dataToSave = {
       description: formData.description,
       hours: formData.hours ? parseFloat(formData.hours) : null,
-      date: formData.date || null,
+      dates: formData.dates.length > 0 ? formData.dates : null,
       trimester: formData.trimester ? parseInt(formData.trimester) : null,
       category: formData.category || null,
       supervisor_name: formData.supervisor_name || null,
@@ -149,7 +165,6 @@ export default function Volunteer({ session }) {
         loadHours();
       }
     }
-
     setLoading(false);
   };
 
@@ -158,12 +173,13 @@ export default function Volunteer({ session }) {
       alert('Cannot edit completed hours. Please contact an administrator if changes are needed.');
       return;
     }
+
     setEditingId(entry.id);
     setShowNewForm(true);
     setFormData({
       hours: entry.hours?.toString() || '',
       description: entry.description || '',
-      date: entry.date ? entry.date.split('T')[0] : '',
+      dates: entry.dates || [],
       trimester: entry.trimester?.toString() || '',
       category: entry.category || '',
       supervisor_name: entry.supervisor_name || '',
@@ -194,13 +210,14 @@ export default function Volunteer({ session }) {
     setFormData({
       hours: '',
       description: '',
-      date: '',
+      dates: [],
       trimester: '',
       category: '',
       supervisor_name: '',
       signature: '',
       status: 'in_progress'
     });
+    setTempDate('');
     setEditingId(null);
     setShowNewForm(false);
     if (canvasRef.current) {
@@ -220,7 +237,6 @@ export default function Volunteer({ session }) {
       const g = pixelData[i + 1];
       const b = pixelData[i + 2];
       const a = pixelData[i + 3];
-      
       if (r !== 250 || g !== 249 || b !== 246 || a !== 255) {
         return false;
       }
@@ -230,7 +246,6 @@ export default function Volunteer({ session }) {
 
   const getCanvasCoordinates = (canvas, e) => {
     const rect = canvas.getBoundingClientRect();
-    
     // Get the display position
     let clientX, clientY;
     if (e.touches) {
@@ -240,15 +255,15 @@ export default function Volunteer({ session }) {
       clientX = e.clientX;
       clientY = e.clientY;
     }
-    
+
     // Calculate position relative to canvas display
     const displayX = clientX - rect.left;
     const displayY = clientY - rect.top;
-    
+
     // Scale to internal canvas resolution
     const scaleX = canvas.width / rect.width;
     const scaleY = canvas.height / rect.height;
-    
+
     return {
       x: displayX * scaleX,
       y: displayY * scaleY
@@ -260,7 +275,6 @@ export default function Volunteer({ session }) {
     setIsDrawing(true);
     const ctx = canvas.getContext('2d');
     const coords = getCanvasCoordinates(canvas, e);
-    
     ctx.beginPath();
     ctx.moveTo(coords.x, coords.y);
   };
@@ -268,10 +282,10 @@ export default function Volunteer({ session }) {
   const draw = (canvas) => (e) => {
     if (!isDrawing) return;
     e.preventDefault();
-    
+
     const ctx = canvas.getContext('2d');
     const coords = getCanvasCoordinates(canvas, e);
-    
+
     ctx.lineTo(coords.x, coords.y);
     ctx.strokeStyle = '#000';
     ctx.lineWidth = 2;
@@ -297,7 +311,6 @@ export default function Volunteer({ session }) {
       // Copy modal canvas to inline canvas
       const modalCtx = modalCanvasRef.current.getContext('2d');
       const inlineCtx = canvasRef.current.getContext('2d');
-      
       inlineCtx.drawImage(modalCanvasRef.current, 0, 0);
     }
     setShowSignatureModal(false);
@@ -321,8 +334,35 @@ export default function Volunteer({ session }) {
     in_school: 'In School'
   };
 
+  const formatDatesDisplay = (dates) => {
+    if (!dates || dates.length === 0) return '';
+    if (dates.length === 1) {
+      return new Date(dates[0] + 'T00:00:00').toLocaleDateString();
+    }
+    return `${dates.map(d => new Date(d + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' })).join(', ')}`;
+  };
+
   const inProgressHours = hours.filter(h => h.status === 'in_progress');
   const completedHours = hours.filter(h => h.status === 'completed');
+
+  const flattenedCompletedHours = completedHours.reduce((acc, entry) => {
+    if (entry.dates && entry.dates.length > 0) {
+      entry.dates.forEach(dateStr => {
+        acc.push({ 
+          ...entry, 
+          displayDate: dateStr, 
+          displayId: `${entry.id}-${dateStr}` 
+        });
+      });
+    } else {
+      acc.push({ 
+        ...entry, 
+        displayDate: entry.date, 
+        displayId: entry.id 
+      });
+    }
+    return acc;
+  }, []);
 
   return (
     <div className="volunteer-container">
@@ -364,7 +404,7 @@ export default function Volunteer({ session }) {
             </div>
 
             <div className="form-field">
-              <label>Hours</label>
+              <label>Hours per Day</label>
               <input
                 type="number"
                 step="0.5"
@@ -375,12 +415,87 @@ export default function Volunteer({ session }) {
             </div>
 
             <div className="form-field">
-              <label>Date</label>
-              <input
-                type="date"
-                value={formData.date}
-                onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-              />
+              <label>Date(s)</label>
+              <div style={{ 
+                display: 'flex',
+                gap: '0.5rem',
+                alignItems: 'flex-start'
+              }}>
+                <input
+                  type="date"
+                  value={tempDate}
+                  onChange={(e) => setTempDate(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      addDate();
+                    }
+                  }}
+                  style={{ flex: 1 }}
+                />
+                <button
+                  type="button"
+                  onClick={addDate}
+                  className="btn-add-date"
+                  style={{
+                    padding: '0.875rem 1rem',
+                    background: '#c93030',
+                    color: 'white',
+                    border: '2px solid #000',
+                    borderRadius: '12px',
+                    cursor: 'pointer',
+                    fontSize: '0.9rem',
+                    fontWeight: 600,
+                    whiteSpace: 'nowrap'
+                  }}
+                >
+                  + Add
+                </button>
+              </div>
+              {formData.dates.length > 0 && (
+                <div style={{ 
+                  marginTop: '0.75rem',
+                  display: 'flex',
+                  flexWrap: 'wrap',
+                  gap: '0.4rem'
+                }}>
+                  {formData.dates.map((date, index) => (
+                    <div
+                      key={index}
+                      style={{
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '0.4rem',
+                        background: '#FAF9F6',
+                        border: '2px solid #000',
+                        borderRadius: '6px',
+                        padding: '0.3rem 0.6rem',
+                        fontSize: '0.85rem',
+                        fontWeight: 500
+                      }}
+                    >
+                      {new Date(date + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                      <button
+                        type="button"
+                        onClick={() => removeDate(index)}
+                        style={{
+                          background: 'none',
+                          border: 'none',
+                          color: '#c93030',
+                          cursor: 'pointer',
+                          fontSize: '1rem',
+                          fontWeight: 700,
+                          padding: 0,
+                          lineHeight: 1,
+                          marginLeft: '0.1rem'
+                        }}
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
             <div className="form-field">
@@ -505,7 +620,7 @@ export default function Volunteer({ session }) {
                       <h3>{entry.description}</h3>
                     </div>
                     <div className="card-details">
-                      {entry.date && <p><strong>Date:</strong> {new Date(entry.date).toLocaleDateString()}</p>}
+                      {entry.dates && entry.dates.length > 0 && <p><strong>Date(s):</strong> {formatDatesDisplay(entry.dates)}</p>}
                       {entry.hours && <p><strong>Hours:</strong> {entry.hours}</p>}
                       {entry.trimester && <p><strong>Trimester:</strong> {entry.trimester}</p>}
                       {entry.category && <p><strong>Category:</strong> {categoryLabels[entry.category]}</p>}
@@ -539,7 +654,7 @@ export default function Volunteer({ session }) {
           <span className="section-indicator black"></span>
           <h2>Completed Hours</h2>
         </div>
-        {completedHours.length === 0 ? (
+        {flattenedCompletedHours.length === 0 ? (
           <div className="empty-state">
             <div className="empty-icon">✓</div>
             <p>No completed hours yet</p>
@@ -547,8 +662,9 @@ export default function Volunteer({ session }) {
           </div>
         ) : (
           <div className="hours-grid">
-            {completedHours.map((entry) => (
-              <div key={entry.id} className="hour-card">
+            {/* Map over the FLATTENED array instead of the original grouped array */}
+            {flattenedCompletedHours.map((entry) => (
+              <div key={entry.displayId} className="hour-card">
                 <div className="card-header">
                   <div className="card-title-area">
                     <div className="card-title">
@@ -556,7 +672,8 @@ export default function Volunteer({ session }) {
                     </div>
                     <div className="card-details">
                       {entry.description && <p><strong>Activity:</strong> {entry.description}</p>}
-                      {entry.date && <p><strong>Date:</strong> {new Date(entry.date).toLocaleDateString()}</p>}
+                      {/* Show ONLY the single specific date for this card */}
+                      <p><strong>Date:</strong> {entry.displayDate ? new Date(entry.displayDate + 'T00:00:00').toLocaleDateString() : 'N/A'}</p>
                       {entry.hours && <p><strong>Hours:</strong> {entry.hours}</p>}
                       {entry.trimester && <p><strong>Trimester:</strong> {entry.trimester}</p>}
                       {entry.category && <p><strong>Category:</strong> {categoryLabels[entry.category]}</p>}
@@ -570,7 +687,6 @@ export default function Volunteer({ session }) {
         )}
       </div>
 
-      {/* Signature Modal */}
       {showSignatureModal && (
         <div className="signature-modal-overlay">
           <div className="signature-modal">
