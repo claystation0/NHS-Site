@@ -11,6 +11,7 @@ export default function Volunteer({ session }) {
   const [isDrawing, setIsDrawing] = useState(false);
   const [showSignatureModal, setShowSignatureModal] = useState(false);
   const [tempDate, setTempDate] = useState('');
+  const [canvasHasContent, setCanvasHasContent] = useState(false);
   const canvasRef = useRef(null);
   const modalCanvasRef = useRef(null);
 
@@ -28,6 +29,9 @@ export default function Volunteer({ session }) {
   // Canvas dimensions (internal resolution)
   const CANVAS_WIDTH = 400;
   const CANVAS_HEIGHT = 150;
+
+  // Hours are locked when the canvas has a signature AND hours has a value
+  const hoursLocked = canvasHasContent && !!formData.hours;
 
   useEffect(() => {
     if (session?.user) {
@@ -50,17 +54,15 @@ export default function Volunteer({ session }) {
   const initializeCanvas = (canvas) => {
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
-    // Set internal resolution
     canvas.width = CANVAS_WIDTH;
     canvas.height = CANVAS_HEIGHT;
-    // Clear with background color
     ctx.fillStyle = '#FAF9F6';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-    // Load existing signature if available
     if (formData.signature) {
       const img = new Image();
       img.onload = () => {
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        setCanvasHasContent(true);
       };
       img.src = formData.signature;
     }
@@ -134,7 +136,10 @@ export default function Volunteer({ session }) {
       trimester: formData.trimester ? parseInt(formData.trimester) : null,
       category: formData.category || null,
       supervisor_name: formData.supervisor_name || null,
-      signature: saveAs === 'completed' && !isCanvasBlank(canvasRef.current) ? canvasRef.current.toDataURL('image/png') : formData.signature || null,
+      // Save signature on both draft and completed if canvas has content
+      signature: !isCanvasBlank(canvasRef.current)
+        ? canvasRef.current.toDataURL('image/png')
+        : formData.signature || null,
       status: saveAs
     };
 
@@ -176,6 +181,7 @@ export default function Volunteer({ session }) {
 
     setEditingId(entry.id);
     setShowNewForm(true);
+    setCanvasHasContent(!!entry.signature);
     setFormData({
       hours: entry.hours?.toString() || '',
       description: entry.description || '',
@@ -220,6 +226,7 @@ export default function Volunteer({ session }) {
     setTempDate('');
     setEditingId(null);
     setShowNewForm(false);
+    setCanvasHasContent(false);
     if (canvasRef.current) {
       const ctx = canvasRef.current.getContext('2d');
       ctx.fillStyle = '#FAF9F6';
@@ -246,7 +253,6 @@ export default function Volunteer({ session }) {
 
   const getCanvasCoordinates = (canvas, e) => {
     const rect = canvas.getBoundingClientRect();
-    // Get the display position
     let clientX, clientY;
     if (e.touches) {
       clientX = e.touches[0].clientX;
@@ -256,11 +262,9 @@ export default function Volunteer({ session }) {
       clientY = e.clientY;
     }
 
-    // Calculate position relative to canvas display
     const displayX = clientX - rect.left;
     const displayY = clientY - rect.top;
 
-    // Scale to internal canvas resolution
     const scaleX = canvas.width / rect.width;
     const scaleY = canvas.height / rect.height;
 
@@ -271,6 +275,11 @@ export default function Volunteer({ session }) {
   };
 
   const startDrawing = (canvas) => (e) => {
+    // Block signing if hours field is empty or zero
+    if (!formData.hours || parseFloat(formData.hours) <= 0) {
+      alert('Please enter your hours before signing.');
+      return;
+    }
     e.preventDefault();
     setIsDrawing(true);
     const ctx = canvas.getContext('2d');
@@ -291,6 +300,8 @@ export default function Volunteer({ session }) {
     ctx.lineWidth = 2;
     ctx.lineCap = 'round';
     ctx.stroke();
+    // Mark canvas as having content once the user starts drawing
+    setCanvasHasContent(true);
   };
 
   const stopDrawing = (e) => {
@@ -298,20 +309,25 @@ export default function Volunteer({ session }) {
     setIsDrawing(false);
   };
 
+  // Clears the canvas visually, resets canvasHasContent, and wipes
+  // formData.signature so the DB field is nulled on the next save
   const clearSignature = (canvas) => () => {
     if (canvas) {
       const ctx = canvas.getContext('2d');
       ctx.fillStyle = '#FAF9F6';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
     }
+    setCanvasHasContent(false);
+    setFormData(prev => ({ ...prev, signature: '' }));
   };
 
   const saveModalSignature = () => {
     if (modalCanvasRef.current && canvasRef.current) {
-      // Copy modal canvas to inline canvas
-      const modalCtx = modalCanvasRef.current.getContext('2d');
       const inlineCtx = canvasRef.current.getContext('2d');
       inlineCtx.drawImage(modalCanvasRef.current, 0, 0);
+      if (!isCanvasBlank(modalCanvasRef.current)) {
+        setCanvasHasContent(true);
+      }
     }
     setShowSignatureModal(false);
   };
@@ -411,7 +427,15 @@ export default function Volunteer({ session }) {
                 min="0"
                 value={formData.hours}
                 onChange={(e) => setFormData({ ...formData, hours: e.target.value })}
+                disabled={hoursLocked}
+                title={hoursLocked ? 'Clear the signature to edit hours' : ''}
+                style={hoursLocked ? { opacity: 0.5, cursor: 'not-allowed' } : {}}
               />
+              {hoursLocked && (
+                <p style={{ fontSize: '0.8rem', color: '#888', marginTop: '0.25rem' }}>
+                  Clear the signature to edit hours.
+                </p>
+              )}
             </div>
 
             <div className="form-field">
@@ -662,7 +686,6 @@ export default function Volunteer({ session }) {
           </div>
         ) : (
           <div className="hours-grid">
-            {/* Map over the FLATTENED array instead of the original grouped array */}
             {flattenedCompletedHours.map((entry) => (
               <div key={entry.displayId} className="hour-card">
                 <div className="card-header">
@@ -672,7 +695,6 @@ export default function Volunteer({ session }) {
                     </div>
                     <div className="card-details">
                       {entry.description && <p><strong>Activity:</strong> {entry.description}</p>}
-                      {/* Show ONLY the single specific date for this card */}
                       <p><strong>Date:</strong> {entry.displayDate ? new Date(entry.displayDate + 'T00:00:00').toLocaleDateString() : 'N/A'}</p>
                       {entry.hours && <p><strong>Hours:</strong> {entry.hours}</p>}
                       {entry.trimester && <p><strong>Trimester:</strong> {entry.trimester}</p>}
