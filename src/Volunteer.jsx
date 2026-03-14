@@ -335,13 +335,19 @@ export default function Volunteer({ session }) {
   const getTotalHours = () => {
     return hours
       .filter(h => h.status === 'completed')
-      .reduce((sum, entry) => sum + (entry.hours || 0), 0);
+      .reduce((sum, entry) => {
+        const numDates = entry.dates?.length || 1;
+        return sum + (entry.hours || 0) * numDates;
+      }, 0);
   };
 
   const getCategoryHours = (category) => {
     return hours
       .filter(h => h.status === 'completed' && h.category === category)
-      .reduce((sum, entry) => sum + (entry.hours || 0), 0);
+      .reduce((sum, entry) => {
+        const numDates = entry.dates?.length || 1;
+        return sum + (entry.hours || 0) * numDates;
+      }, 0);
   };
 
   const categoryLabels = {
@@ -373,7 +379,7 @@ export default function Volunteer({ session }) {
     } else {
       acc.push({ 
         ...entry, 
-        displayDate: entry.date, 
+        displayDate: entry.dates?.[0] || null,
         displayId: entry.id 
       });
     }
@@ -645,7 +651,10 @@ export default function Volunteer({ session }) {
                     </div>
                     <div className="card-details">
                       {entry.dates && entry.dates.length > 0 && <p><strong>Date(s):</strong> {formatDatesDisplay(entry.dates)}</p>}
-                      {entry.hours && <p><strong>Hours:</strong> {entry.hours}</p>}
+                      {entry.hours && <p><strong>Hours per Day:</strong> {entry.hours}</p>}
+                      {entry.dates && entry.dates.length > 0 && entry.hours && (
+                        <p><strong>Total Hours:</strong> {(entry.hours * entry.dates.length).toFixed(1)}</p>
+                      )}
                       {entry.trimester && <p><strong>Trimester:</strong> {entry.trimester}</p>}
                       {entry.category && <p><strong>Category:</strong> {categoryLabels[entry.category]}</p>}
                       {entry.supervisor_name && <p><strong>Supervisor:</strong> {entry.supervisor_name}</p>}

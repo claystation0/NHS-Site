@@ -91,7 +91,10 @@ const MemberCatalogue = ({ profile }) => {
 
     memberRecords.forEach(record => {
       const trimester = record.trimester;
-      const hoursValue = parseFloat(record.hours) || 0;
+      const hoursPerDay = parseFloat(record.hours) || 0;
+      // Multiply hours per day by the number of dates logged
+      const numDates = record.dates?.length || 1;
+      const hoursValue = hoursPerDay * numDates;
       const category = record.category;
 
       if (category === 'in_school') hours.total.inSchool += hoursValue;
